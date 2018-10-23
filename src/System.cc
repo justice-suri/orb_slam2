@@ -631,7 +631,7 @@ void System::SaveMap(const string &filename)
     cout << " ...done" << std::endl;
     out.close();
 
-    system("cp "+);
+    system("cp "+filename+" copy_"filename");
 }
 bool System::LoadMap(const string &filename)
 {
