@@ -38,13 +38,19 @@ endif()
 
 find_package(Eigen3 3.1.0 REQUIRED)
 find_package(Pangolin REQUIRED)
+find_package(PCL 1.7 REQUIRED)
+FIND_PACKAGE(octomap REQUIRED)
 
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
+${PCL_INCLUDE_DIRS}
+${OCTOMAP_INCLUDE_DIRS}
 )
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
@@ -68,6 +74,7 @@ src/KeyFrameDatabase.cc
 src/Sim3Solver.cc
 src/Initializer.cc
 src/Viewer.cc
+src/pointcloudmapping.cc
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -76,6 +83,8 @@ ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+${PCL_LIBRARIES}
+${OCTOMAP_LIBRARIES}
 )
 
 message(STATUS "Compile With map save/load function")
@@ -83,7 +92,7 @@ find_library(BOOST_SERIALIZATION boost_serialization)
 if (NOT BOOST_SERIALIZATION)
     message(FATAL_ERROR "Can't find libboost_serialization")
 endif()
-target_link_libraries(${PROJECT_NAME} ${BOOST_SERIALIZATION})
+target_link_libraries(${PROJECT_NAME} ${BOOST_SERIALIZATION} ${PCL_LIBRARIES})
 
 # Build examples
 
