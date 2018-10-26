@@ -102,14 +102,19 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mpMap = new Map();
     }
 
+    mpPointCloudMapping = make_shared<PointCloudMapping>(0.1);//PCL,OctoMap
+
     //Create Drawers. These are used by the Viewer
     mpFrameDrawer = new FrameDrawer(mpMap, bReuseMap);
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
     //Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
+
+//    mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
+//                             mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor, bReuseMap);
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
-                             mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor, bReuseMap);
+                             mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor, mpPointCloudMapping, bReuseMap);
 
     //Initialize the Local Mapping thread and launch
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
@@ -433,6 +438,8 @@ void System::Shutdown()
         }
     }
 
+    mpPointCloudMapping->shutdown();//PCL
+
     // Wait until all thread have effectively stopped
     while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA())
     {
@@ -631,7 +638,8 @@ void System::SaveMap(const string &filename)
     cout << " ...done" << std::endl;
     out.close();
 
-    system("cp "+filename+" copy_"filename);
+    std:string cmd = "cp "+mapfile+" copy_"+mapfile;
+    int ld = system(cmd.c_str());
 }
 bool System::LoadMap(const string &filename)
 {
