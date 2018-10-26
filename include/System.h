@@ -35,10 +35,13 @@
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
 #include "Viewer.h"
+#include "pointcloudmapping.h"
 
 #include "BoostArchiver.h"
 // for map file io
 #include <fstream>
+
+class PointCloudMapping;//PCL
 
 namespace ORB_SLAM2
 {
@@ -181,6 +184,9 @@ private:
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
     std::mutex mMutexState;
+
+    // point cloud mapping
+    shared_ptr<PointCloudMapping>  mpPointCloudMapping;//PCL
 };
 
 }// namespace ORB_SLAM
